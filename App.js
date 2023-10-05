@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, Text, ImageBackground, Image, SafeAreaView, useWindowDimensions,TouchableOpacity, TextInput, ScrollView} from 'react-native';
 import { Card, TouchableRipple } from 'react-native-paper';
 
 import {CalendarDaysIcon, MagnifyingGlassIcon} from 'react-native-heroicons/outline';
 import {MapPinIcon} from 'react-native-heroicons/solid';
 import { theme } from './theme';
+import {debounce} from 'lodash';
+import { fetchLocations, fetchWeatherForecast } from './api/weather';
 
 export default function CardUI() {
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
@@ -12,11 +14,32 @@ export default function CardUI() {
   const cardWidth = screenWidth * 0.9;
 
   const [showSearch, toggleSearch] = useState(false);
-  const [locations, setLocations] = useState([1,2,3]);
+  const [locations, setLocations] = useState([]);
+  const [weather, setWeather] = useState({})
+
 
   const handleLocation = (loc) =>{
     console.log('location: ', loc);
+    setLocations([]);
+    fetchWeatherForecast({
+      cityName: loc.name,
+      days: '7'
+    }).then(data=>{
+      setWeather(data);
+      console.log('got forecast: ', data)
+    })
   }
+
+  const handleSearch = value=>{
+    if(value.length>2) {
+      fetchLocations({cityName: value}).then(data=>{
+        setLocations(data);
+      })
+    }
+  }
+  const handleTextDebounce = useCallback(debounce(handleSearch, 1200), [])
+
+  const {current, location} = weather;
 
   return (
     <View className="flex-1">
@@ -34,15 +57,18 @@ export default function CardUI() {
             
           }}
         >
+
           <MagnifyingGlassIcon size={25} color="black" style={{ marginHorizontal: 12 }} />
           {showSearch ? (
             <TextInput
+              onChangeText={handleTextDebounce}
               placeholder="Search City"
               placeholderTextColor="lightgray"
-              style={{ flex: 1, fontSize: 16, color: 'white' }}
+              style={{ flex: 1, fontSize: 16, color: 'black' }}
             />
           ) : null}
         </TouchableOpacity>
+
       </View>
       {locations.length > 0 && showSearch ? (
         <View style={{ backgroundColor: 'gray', borderRadius: 20, marginTop: 8 }}>
@@ -50,7 +76,7 @@ export default function CardUI() {
             return (
               <TouchableOpacity
                 onPress={() => handleLocation(loc)}
-                key={index}
+                key={index} 
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
@@ -60,7 +86,7 @@ export default function CardUI() {
                 }}
               >
                 <MapPinIcon size={20} color="gray" />
-                <Text style={{ color: 'black', fontSize: 16, marginLeft: 8 }}>London, United Kingdom</Text>
+                <Text style={{ color: 'black', fontSize: 16, marginLeft: 8 }}>{loc?.name}, {loc?.country}</Text>
               </TouchableOpacity>
             );
           })}
@@ -87,20 +113,20 @@ export default function CardUI() {
               style={{ width: '100%', height: '100%', backgroundColor: 'transparent' }}
             >
               <View className="flex flex-col items-center p-11">
-                <Text className="text-white text-3xl text-center">Clear Night</Text>
-                <Text className="text-white text-lg text-center py-2">Detroit, US</Text>
-                <Text className="text-white text-6xl text-center py-4">20°C</Text>
+                <Text className="text-white text-3xl text-center">{current?.condition?.text}</Text>
+                <Text className="text-white text-lg text-center py-2">{location?.name}, {location?.country}</Text>
+                <Text className="text-white text-6xl text-center py-4">{Math.round(current?.temp_c)}°C</Text>
               </View>
 
                {/* Other Stats */}
               <View className="flex flex-row justify-between p-7">
                 <View className="flex-row items-center">
                   <Image source={require('./assets/icons/wind.png')} style={{ height: 24, width: 24 }} />
-                  <Text className="text-white font-bold text-lg ml-2">22km</Text>
+                  <Text className="text-white font-bold text-lg ml-2">{current?.wind_kph}</Text>
                 </View>
                 <View className="flex-row items-center">
                   <Image source={require('./assets/icons/drop.png')} style={{ height: 24, width: 24 }} />
-                  <Text className="text-white font-bold text-lg ml-2">23%</Text>
+                  <Text className="text-white font-bold text-lg ml-2">{current?.humidity}%</Text>
                 </View>
                 <View className="flex-row items-center">
                   <Image source={require('./assets/icons/sun.png')} style={{ height: 24, width: 24 }} />

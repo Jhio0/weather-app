@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, ImageBackground, Image, SafeAreaView, useWindowDimensions,TouchableOpacity, TextInput, ScrollView} from 'react-native';
 import { Card, TouchableRipple } from 'react-native-paper';
 
@@ -7,6 +7,8 @@ import {MapPinIcon} from 'react-native-heroicons/solid';
 import { theme } from './theme';
 import {debounce} from 'lodash';
 import { fetchLocations, fetchWeatherForecast } from './api/weather';
+import { weatherImages } from './constants';
+import * as Progress from 'react-native-progress';
 
 export default function CardUI() {
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
@@ -16,6 +18,7 @@ export default function CardUI() {
   const [showSearch, toggleSearch] = useState(false);
   const [locations, setLocations] = useState([]);
   const [weather, setWeather] = useState({})
+  const [loading, setLoading] = useState(true);
 
 
   const handleLocation = (loc) =>{
@@ -37,6 +40,20 @@ export default function CardUI() {
       })
     }
   }
+
+  useEffect(() => {
+    fetchMyWeatherData();
+  }, {})
+
+  const fetchMyWeatherData = async ()=> {
+    fetchWeatherForecast({
+      cityName: 'Calgary',
+      days: '7'
+    }).then(data=>{
+      setWeather(data);
+    })
+  }
+
   const handleTextDebounce = useCallback(debounce(handleSearch, 1200), [])
 
   const {current, location} = weather;
@@ -108,7 +125,7 @@ export default function CardUI() {
             <ImageBackground
               source={{
                 uri:
-                  'https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-weather/draw2.webp',
+                  'https://w.forfun.com/fetch/31/31da127e3ee047f85eada601938a96f0.jpeg',
               }}
               style={{ width: '100%', height: '100%', backgroundColor: 'transparent' }}
             >
@@ -149,80 +166,34 @@ export default function CardUI() {
           contentContainerStyle={{ paddingHorizontal: 0 }}
           showsHorizontalScrollIndicator={false}
         >
-          {/*Card1 */}
-          <View className="flex-row">
-            <View className="flex justify-center items-center w-88 mr-4">
-              <View
-                style={{
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  width: 80,
-                  borderRadius: 30,
-                  paddingVertical: 12,
-                  backgroundColor: 'rgba(255,255,255,0.15)',
-                }}
-              >
-                <Image source={require('./assets/images/heavyrain.png')} style={{ height: 44, width: 44 }} />
-                <Text className="text-white txt-16">Monday</Text>
-                <Text style={{ color: 'white', fontSize: 24, fontWeight: 'bold' }}>13°C</Text>
+          {
+            weather?.forecast?.forecastday?.map((item, index)=> {
+              let date = new Date(item.date);
+              let options = {weekday: 'long'};
+              let dayName = date.toLocaleDateString('en-US', options);
+              dayName = dayName.split(',')[0];
+              return (
+                <View className="flex justify-center items-center w-88 mr-4"
+                  key={index}>
+                  <View
+                    style={{
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      width: 80,
+                      borderRadius: 30,
+                      paddingVertical: 12,
+                      backgroundColor: 'rgba(255,255,255,0.15)',
+                    }}
+                  >
+                    <Image source={weatherImages[item?.day?.condition.text]} style={{ height: 44, width: 44 }} />
+                    <Text className="text-white txt-16">{dayName}</Text>
+                    <Text style={{ color: 'white', fontSize: 24, fontWeight: 'bold' }}>{Math.round(item?.day?.avgtemp_c)}&#176;</Text>
+                  </View>
               </View>
-            </View>
-          </View>
-          {/*Card2 */}
-          <View className="flex-row">
-            <View className="flex justify-center items-center w-88 mr-4">
-              <View
-                style={{
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  width: 80,
-                  borderRadius: 30,
-                  paddingVertical: 12,
-                  backgroundColor: 'rgba(255,255,255,0.15)',
-                }}
-              >
-                <Image source={require('./assets/images/heavyrain.png')} style={{ height: 44, width: 44 }} />
-                <Text className="text-white txt-16">Monday</Text>
-                <Text style={{ color: 'white', fontSize: 24, fontWeight: 'bold' }}>13°C</Text>
-              </View>
-            </View>
-          </View>
-          <View className="flex-row">
-            <View className="flex justify-center items-center w-88 mr-4">
-              <View
-                style={{
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  width: 80,
-                  borderRadius: 30,
-                  paddingVertical: 12,
-                  backgroundColor: 'rgba(255,255,255,0.15)',
-                }}
-              >
-                <Image source={require('./assets/images/heavyrain.png')} style={{ height: 44, width: 44 }} />
-                <Text className="text-white txt-16">Monday</Text>
-                <Text style={{ color: 'white', fontSize: 24, fontWeight: 'bold' }}>13°C</Text>
-              </View>
-            </View>
-          </View>
-          <View className="flex-row">
-            <View className="flex justify-center items-center w-88 mr-4">
-              <View
-                style={{
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  width: 80,
-                  borderRadius: 30,
-                  paddingVertical: 12,
-                  backgroundColor: 'rgba(255,255,255,0.15)',
-                }}
-              >
-                <Image source={require('./assets/images/heavyrain.png')} style={{ height: 44, width: 44 }} />
-                <Text className="text-white txt-16">Monday</Text>
-                <Text style={{ color: 'white', fontSize: 24, fontWeight: 'bold' }}>13°C</Text>
-              </View>
-            </View>
-          </View>
+              )
+            })
+          }
+          
         </ScrollView>
       </View>
       

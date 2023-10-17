@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, ImageBackground, Image, SafeAreaView, useWindowDimensions,TouchableOpacity, TextInput, ScrollView} from 'react-native';
-import { Card, TouchableRipple } from 'react-native-paper';
+import { View, Text, ImageBackground, Image, SafeAreaView, useWindowDimensions,TouchableOpacity, TextInput, ScrollView, FlatList} from 'react-native';
+import { Card, TouchableRipple, Body } from 'react-native-paper';
 
 import {CalendarDaysIcon, MagnifyingGlassIcon} from 'react-native-heroicons/outline';
 import {MapPinIcon} from 'react-native-heroicons/solid';
@@ -11,7 +11,11 @@ import { weatherImages } from './constants';
 import * as Progress from 'react-native-progress';
 import { getData, storeData } from './utils/asyncStorage';
 
-import Moon from './assets/images/Moon.png'
+import Moon from './assets/images/night2.gif'
+import SunBackground from './assets/images/morning.gif'
+import blood from './assets/images/sunset.gif'
+import { StatusBar } from 'expo-status-bar';
+import LottieView from 'lottie-react-native';
 
 
 export default function CardUI() {
@@ -69,33 +73,38 @@ export default function CardUI() {
   const handleTextDebounce = useCallback(debounce(handleSearch, 1200), [])
 
   const {current, location} = weather;
+  
+  let background = Moon; // Default background
 
-  // function convertToNormalTime(time) {
-  //   const [hours, minutes] = time.split(':');
-  //   let period = 'AM';
-  
-  //   let hour = parseInt(hours, 10);
-  
-  //   if (hour >= 12) {
-  //     period = 'PM';
-  //     if (hour > 12) {
-  //       hour -= 12;
-  //     }
-  //   }
-  
-  //   return `${hour}:${minutes} ${period}`;
-  // }
-  // const normalTime = convertToNormalTime(location?.localtime.split(' ')[1]);
+  const localTime = location?.localtime;
+  if (localTime) {
+  const [hours, minutes] = localTime.split(' ')[1].split(':');
+  const hour = parseInt(hours, 10);
+  const minute = parseInt(minutes, 10);
 
+  if ((hour >= 5 && hour < 17) || (hour === 17 && minute === 0)) {
+    // Daytime (5:00 AM to 4:59 PM)
+    background = SunBackground;
+  } else if ((hour >= 20 || (hour === 19 && minute > 0)) || (hour >= 0 && hour <= 5)) {
+    // Evening (8:01 PM to 5:00 AM)
+    background = Moon;
+  } else if ((hour === 17 && minute > 0) || (hour >= 18 && hour <= 20)) {
+    // Sunset (5:01 PM to 8:00 PM)
+    background = blood;
+  }
+}
+ 
   return (
     <View className="flex-1">
+      <StatusBar style="light"/>
+      <Image blurRadius={70} source={background} className="absolute h-full w-full"></Image>
       {
         loading? (
           <View className="flex-1 flex-row justify-center items-center">
-            <Progress.CircleSnail thickness={10} size={140} color="#0bb3b2"/>
+            <Progress.CircleSnail thickness={10} size={140} color="#FFFFFF"/>
           </View>
         ):(
-        <ImageBackground source={Moon} className="flex-1">
+        <ImageBackground source={background} className="flex-1">
           <SafeAreaView style={{ backgroundColor: 'rgba(0, 0, 0, 0.35)'}} className="flex-1">
             {/* Search Section */}
             <View className="h-7 mx-4 items-end">
@@ -146,45 +155,50 @@ export default function CardUI() {
               </View>
             ) : null}
             {/* Forecast Section */}
-            <View className="flex-1 justify-center items-center p-4">
-              
-              <Card style={{ width: cardWidth, height: cardHeight, borderRadius: 20, backgroundColor: 'transparent' }}>
-                <TouchableRipple
-                  rippleColor="rgba(255, 255, 255, 0.3)"
+            <View className="flex-1 justify-start items-center p-10">
+            <TouchableRipple
+                  onPress={() => console.log('pressed')}
+                  rippleColor="rgba(0, 0, 0, 0.1)"
                   style={{
                     borderTopLeftRadius: 20,
                     borderTopRightRadius: 20,
                     borderBottomLeftRadius: 20,
                     borderBottomRightRadius: 20,
                     overflow: 'hidden',
-                    padding:10,
                   }}
                 >
-                  <View>
-                    <View className="flex flex-col items-center ">
-                      <Text className="text-white text-3xl text-center">{current?.condition?.text}</Text>
-                      <Text className="text-white text-lg text-center py-2">{location?.name}, {location?.country}</Text>
-                      <Text className="text-white text-6xl text-center py-4">{Math.round(current?.temp_c)}°C</Text>
-                    </View>
+                <Card style={{ width: cardWidth, height: cardHeight, borderRadius: 20, 
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',}}>
+                    <View className="p-4">
+                      <View className="flex flex-col items-center ">
+                        <Text className="text-white text-3xl text-center">{current?.condition?.text}</Text>
+                        <Text className="text-white text-lg text-center py-2">{location?.name}, {location?.country}</Text>
+                        <View className="flex flex=row justify-between p-3">
+                          <View className="flex-row items-center">
+                            <Image source={weatherImages[current?.condition.text]}  className="w-20 h-20"/>
+                            <Text className="text-white text-6xl text-center ml-5">{Math.round(current?.temp_c)}°C</Text>
+                          </View>
+                        </View>
+                      </View>
 
-                   {/* Other Stats */}
-                    <View className="flex flex-row justify-between p-7">
-                      <View className="flex-row items-center">
-                        <Image source={require('./assets/icons/wind.png')} style={{ height: 24, width: 24 }} />
-                        <Text className="text-white font-bold text-lg ml-2">{current?.wind_kph}</Text>
-                      </View>
-                      <View className="flex-row items-center">
-                        <Image source={require('./assets/icons/drop.png')} style={{ height: 24, width: 24 }} />
-                        <Text className="text-white font-bold text-lg ml-2">{current?.humidity}%</Text>
-                      </View>
-                      <View className="flex-row items-center">
-                        <Image source={require('./assets/icons/sun.png')} style={{ height: 24, width: 24 }} />
-                        <Text className="text-white font-bold text-lg ml-2">{location?.localtime}</Text>
+                    {/* Other Stats */}
+                      <View className="flex flex-row justify-between px-20 ">
+                        <View className="flex-row items-center">
+                          <Image source={require('./assets/icons/wind.png')} style={{ height: 24, width: 25 }} />
+                          <Text className="text-white font-bold text-lg ml-1">{Math.round(current?.wind_kph)}</Text>
+                        </View>
+                        <View className="flex-row items-center">
+                          <Image source={require('./assets/icons/drop.png')} style={{ height: 24, width: 25 }} />
+                          <Text className="text-white font-bold text-lg ml-1">{current?.humidity}%</Text>
+                        </View>
+                        {/* <View className="flex-row items-center">
+                          <Image source={require('./assets/icons/sun.png')} style={{ height: 24, width: 24 }} />
+                          <Text className="text-white font-bold text-lg ml-2">{normalTime}</Text>
+                        </View> */}
                       </View>
                     </View>
-                  </View>
-                </TouchableRipple>
-              </Card>
+                </Card>
+              </TouchableRipple>
             </View>
                     
             {/* Forecast for the Next Days */}
@@ -230,9 +244,13 @@ export default function CardUI() {
             </View>
           </SafeAreaView>
         </ImageBackground>
+        
                 
         )
       }
   </View>
   );
 }
+
+
+ 

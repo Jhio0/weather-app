@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, ImageBackground, Image, SafeAreaView, useWindowDimensions,TouchableOpacity, TextInput, ScrollView, FlatList} from 'react-native';
-import { Card, TouchableRipple, Body } from 'react-native-paper';
+import { View, Text, ImageBackground, Image, SafeAreaView, useWindowDimensions,TouchableOpacity, TextInput, ScrollView} from 'react-native';
+import { Card, TouchableRipple } from 'react-native-paper';
 
 import {CalendarDaysIcon, MagnifyingGlassIcon} from 'react-native-heroicons/outline';
 import {MapPinIcon} from 'react-native-heroicons/solid';
@@ -15,7 +15,6 @@ import Moon from './assets/images/night2.gif'
 import SunBackground from './assets/images/morning.gif'
 import blood from './assets/images/sunset.gif'
 import { StatusBar } from 'expo-status-bar';
-import LottieView from 'lottie-react-native';
 
 
 export default function CardUI() {
@@ -105,7 +104,9 @@ export default function CardUI() {
           </View>
         ):(
         <ImageBackground source={background} className="flex-1">
+          
           <SafeAreaView style={{ backgroundColor: 'rgba(0, 0, 0, 0.35)'}} className="flex-1">
+            
             {/* Search Section */}
             <View className="h-7 mx-4 items-end">
               <TouchableOpacity
@@ -156,48 +157,48 @@ export default function CardUI() {
             ) : null}
             {/* Forecast Section */}
             <View className="flex-1 justify-start items-center p-10">
-            <TouchableRipple
-                  onPress={() => console.log('pressed')}
-                  rippleColor="rgba(0, 0, 0, 0.1)"
-                  style={{
-                    borderTopLeftRadius: 20,
-                    borderTopRightRadius: 20,
-                    borderBottomLeftRadius: 20,
-                    borderBottomRightRadius: 20,
-                    overflow: 'hidden',
-                  }}
-                >
-                <Card style={{ width: cardWidth, height: cardHeight, borderRadius: 20, 
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',}}>
-                    <View className="p-4">
-                      <View className="flex flex-col items-center ">
-                        <Text className="text-white text-3xl text-center">{current?.condition?.text}</Text>
-                        <Text className="text-white text-lg text-center py-2">{location?.name}, {location?.country}</Text>
-                        <View className="flex flex=row justify-between p-3">
-                          <View className="flex-row items-center">
-                            <Image source={weatherImages[current?.condition.text]}  className="w-20 h-20"/>
-                            <Text className="text-white text-6xl text-center ml-5">{Math.round(current?.temp_c)}°C</Text>
+              <TouchableRipple
+                    onPress={() => console.log('pressed')}
+                    rippleColor="rgba(0, 0, 0, 0.1)"
+                    style={{
+                      borderTopLeftRadius: 20,
+                      borderTopRightRadius: 20,
+                      borderBottomLeftRadius: 20,
+                      borderBottomRightRadius: 20,
+                      overflow: 'hidden',
+                    }}
+                  >
+                  <Card style={{ width: cardWidth, height: cardHeight, borderRadius: 20, 
+                    backgroundColor: 'rgba(255, 255, 255, 0.05)',}}>
+                      <View className="p-4">
+                        <View className="flex flex-col items-center ">
+                          <Text className="text-white text-3xl text-center">{current?.condition?.text}</Text>
+                          <Text className="text-white text-lg text-center py-2">{location?.name}, {location?.country}</Text>
+                          <View className="flex flex=row justify-between p-3">
+                            <View className="flex-row items-center">
+                              <Image source={weatherImages[current?.condition.text]}  className="w-20 h-20"/>
+                              <Text className="text-white text-6xl text-center ml-5">{Math.round(current?.temp_c)}°C</Text>
+                            </View>
                           </View>
                         </View>
-                      </View>
 
-                    {/* Other Stats */}
-                      <View className="flex flex-row justify-between px-20 ">
-                        <View className="flex-row items-center">
-                          <Image source={require('./assets/icons/wind.png')} style={{ height: 24, width: 25 }} />
-                          <Text className="text-white font-bold text-lg ml-1">{Math.round(current?.wind_kph)}</Text>
+                      {/* Other Stats */}
+                        <View className="flex flex-row justify-between px-20 ">
+                          <View className="flex-row items-center">
+                            <Image source={require('./assets/icons/wind.png')} style={{ height: 24, width: 25 }} />
+                            <Text className="text-white font-bold text-lg ml-1">{Math.round(current?.wind_kph)}</Text>
+                          </View>
+                          <View className="flex-row items-center">
+                            <Image source={require('./assets/icons/drop.png')} style={{ height: 24, width: 25 }} />
+                            <Text className="text-white font-bold text-lg ml-1">{current?.humidity}%</Text>
+                          </View>
+                          {/* <View className="flex-row items-center">
+                            <Image source={require('./assets/icons/sun.png')} style={{ height: 24, width: 24 }} />
+                            <Text className="text-white font-bold text-lg ml-2">{normalTime}</Text>
+                          </View> */}
                         </View>
-                        <View className="flex-row items-center">
-                          <Image source={require('./assets/icons/drop.png')} style={{ height: 24, width: 25 }} />
-                          <Text className="text-white font-bold text-lg ml-1">{current?.humidity}%</Text>
-                        </View>
-                        {/* <View className="flex-row items-center">
-                          <Image source={require('./assets/icons/sun.png')} style={{ height: 24, width: 24 }} />
-                          <Text className="text-white font-bold text-lg ml-2">{normalTime}</Text>
-                        </View> */}
                       </View>
-                    </View>
-                </Card>
+                  </Card>
               </TouchableRipple>
             </View>
                     

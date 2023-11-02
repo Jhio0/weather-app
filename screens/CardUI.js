@@ -3,7 +3,7 @@ import { View, Text, ImageBackground, Image, SafeAreaView, useWindowDimensions,T
 import { Card, TouchableRipple } from 'react-native-paper';
 
 import {CalendarDaysIcon, MagnifyingGlassIcon} from 'react-native-heroicons/outline';
-import {MapPinIcon} from 'react-native-heroicons/solid';
+import {MapPinIcon, Bars3Icon} from 'react-native-heroicons/solid';
 import {debounce} from 'lodash';
 import { fetchLocations, fetchWeatherForecast } from '../api/weather';
 import { weatherImages } from '../constants';
@@ -107,16 +107,14 @@ export default function CardUI({navigation}) {
         <ImageBackground source={background} className="flex-1">
           
           <SafeAreaView style={{ backgroundColor: 'rgba(0, 0, 0, 0.35)'}} className="flex-1">
-           {/* MenuBar */}
-          <TouchableOpacity onPress={() => navigation.openDrawer()}>
-            <ImageBackground
-              source={require('../assets/icon.png')}
-              style={{width: 35, height: 35}}
-              imageStyle={{borderRadius: 25}}
-            />
-          </TouchableOpacity>
-            {/* Search Section */}
-            <View className="h-7 mx-4 items-end">
+            <View className="flex-row h-7 mx-4 items-center">
+              {/* MenuBar */}
+              <TouchableOpacity onPress={() => navigation.openDrawer()}>
+                <Bars3Icon size={25} color="white" style={{ marginHorizontal: 12 }} />
+              </TouchableOpacity>
+              {/* Search Section */}
+
+              <View className="flex-1 h-7  items-end">
               <TouchableOpacity
                 onPress={() => toggleSearch(!showSearch)}
                 style={{
@@ -129,7 +127,7 @@ export default function CardUI({navigation}) {
                 }}
               >
 
-                <MagnifyingGlassIcon size={25} color="black" style={{ marginHorizontal: 12 }} />
+                <MagnifyingGlassIcon size={25} color="white" style={{ marginHorizontal: 12 }} />
                 {showSearch ? (
                   <TextInput
                     onChangeText={handleTextDebounce}
@@ -139,7 +137,7 @@ export default function CardUI({navigation}) {
                   />
                 ) : null}
               </TouchableOpacity>
-
+              </View>
             </View>
             {locations.length > 0 && showSearch ? (
               <View style={{ backgroundColor: 'gray', borderRadius: 20, marginTop: 8 }}>

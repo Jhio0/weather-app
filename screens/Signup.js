@@ -24,7 +24,7 @@ export default function Login({ navigation }) {
           <View className="flex left-0 top-0 items-start pt-10">
 
             <Text className="text-black font-tracking-wider text-4xl">
-              Sign In
+              Sign Up
             </Text>
 
             <View className="flex flex-row items-baseline pt-5">

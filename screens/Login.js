@@ -68,7 +68,7 @@ export default function Login({ navigation }) {
                   placeholderTextColor="#aaa"
                 />
                 <MaterialCommunityIcons 
-                  name={showPassword ? 'eye-off' : 'eye'} 
+                  name={showPassword ?  'eye' : 'eye-off'} 
                   size={28} 
                   color="#aaa"
                   onPress={toggleShowPassword} 

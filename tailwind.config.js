@@ -5,6 +5,9 @@ module.exports = {
   "./screens/**/*.{js,jsx,ts,tsx}",
 ],
   theme: {
+    fontfamily: {
+      'Poppins': ['Poppins', 'sans-serif']
+    },
     extend: {},
   },
   plugins: [],

@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, View, TouchableOpacity, TextInput, Image, ImageBackground} from "react-native";
+import { Text, View, TouchableOpacity, TextInput, Image, ImageBackground, Alert} from "react-native";
 import Clouds from '../assets/images/clouds.gif'
 import { Checkbox } from "react-native-paper";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -7,13 +7,33 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState } from 'react';
 
 export default function Login({ navigation }) {
-    const [checked, setChecked] = React.useState(false);
-    const Stack = createNativeStackNavigator();
-    const [password, setPassword] = useState(''); 
-    
-    // State variable to track password visibility 
-    const [showPassword, setShowPassword] = useState(false); 
+
+  const [checked, setChecked] = React.useState(false);
+  const Stack = createNativeStackNavigator();
+  const [password, setPassword] = useState(''); 
   
+  // State variable to track password visibility 
+    const [showPassword, setShowPassword] = useState(false); 
+
+    const [email, setEmail] = useState('');
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  
+    const handleSignUp = () => {
+      if (!emailRegex.test(email)) {
+        Alert.alert('Invalid Email', 'Please enter a valid email address');
+        return;
+      }
+
+      if (!passwordRegex.test(password)) {
+        Alert.alert(
+          'Invalid Password',
+          'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character.'
+        );
+        return;
+      }
+        navigation.navigate('AuthStack');
+    };
   return (
     <View className="bg-white h-full w-full">
       <ImageBackground source={Clouds} style={{width: '100%', height: '100%'}}>
@@ -45,7 +65,7 @@ export default function Login({ navigation }) {
               <Text className="text-black font-bold text-lg">
                 Email
               </Text>
-              <TextInput className="border-b-2 border-black w-full h-10" placeholder="Email" />
+              <TextInput className="border-b-2 border-black w-full h-10" placeholder="Email" value={email} onChangeText={(text) => setEmail(text)}/>
             </View>
 
             <View className="flex flex-col mt-10">
@@ -57,9 +77,9 @@ export default function Login({ navigation }) {
                   className="border-b-2 border-black w-full h-10" 
                   secureTextEntry={!showPassword} 
                   value={password} 
-                  onChangeText={setPassword} 
                   placeholder="Enter Password"
                   placeholderTextColor="#aaa"
+                  onChangeText={(text) => setPassword(text)}
                 />
 
               </View>
@@ -72,7 +92,7 @@ export default function Login({ navigation }) {
           <View className="flex flex-col pt-14">
             <TouchableOpacity
              className="bg-indigo-900 rounded-3xl py-2 px-4"
-              onPress={() => navigation.navigate('Login')}
+              onPress={handleSignUp}
              >
               <Text className="text-white text-lg font-bold text-center">
                 Signup

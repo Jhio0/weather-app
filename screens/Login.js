@@ -1,15 +1,22 @@
-import React from "react";
-import { Text, View, TouchableOpacity, TextInput, Image, ImageBackground} from "react-native";
+import React, { useEffect } from "react";
+import { Text, View, TouchableOpacity, TextInput, Image, ImageBackground, Alert} from "react-native";
 import Clouds from '../assets/images/clouds.gif'
 import { Checkbox } from "react-native-paper";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState } from 'react';
+import * as LocalAuthentication from 'expo-local-authentication';
 
-export default function Login({ navigation }) {
+
+export default function Login({ navigation}) {
+  const [isBiometricAvailable, setIsBiometricAvailable] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [checked, setChecked] = React.useState(false);
   const Stack = createNativeStackNavigator();
   const [password, setPassword] = useState(''); 
+  const [email, setEmail] = useState('');
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
   
   // State variable to track password visibility 
   const [showPassword, setShowPassword] = useState(false); 
@@ -17,7 +24,43 @@ export default function Login({ navigation }) {
   // Function to toggle the password visibility state 
   const toggleShowPassword = () => { 
       setShowPassword(!showPassword); 
-  }; 
+  };
+
+  const handleLogIn = () => {
+    if (!emailRegex.test(email)) {
+      Alert.alert('Invalid Email', 'Please enter a valid email address');
+      return;
+    }
+    if (!passwordRegex.test(password)) {
+      Alert.alert(
+        'Invalid Password',
+        'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character.'
+      );
+      return;
+    }
+      navigation.navigate('AuthStack');
+  };
+
+  function onAuthenticate(){
+    const auth = LocalAuthentication.authenticateAsync({
+      promptMessage: "Authenticate with Biometrics",
+      cancelLabel: "Cancel",
+      fallbackLabel: "Use Password"
+    });
+    auth.then((result) => {
+      console.log(result);
+      if(result.success){
+        navigation.navigate('AuthStack');
+      }
+    });
+  }
+
+  useEffect(() => {
+    (async () => {
+      const compatible = await LocalAuthentication.hasHardwareAsync();
+      setIsBiometricAvailable(compatible);
+    })();
+  });
 
 
   return (
@@ -51,7 +94,7 @@ export default function Login({ navigation }) {
               <Text className="text-black font-bold text-lg">
                 Email
               </Text>
-              <TextInput className="border-b-2 border-black w-full h-10" placeholder="Email" />
+              <TextInput className="border-b-2 border-black w-full h-10" placeholder="Email" value={email} onChangeText={(text) => setEmail(text)}/>
             </View>
 
             <View className="flex flex-col mt-10">
@@ -63,9 +106,9 @@ export default function Login({ navigation }) {
                   className="border-b-2 border-black w-full h-10" 
                   secureTextEntry={!showPassword} 
                   value={password} 
-                  onChangeText={setPassword} 
                   placeholder="Enter Password"
                   placeholderTextColor="#aaa"
+                  onChangeText={(text) => setPassword(text)}
                 />
                 <MaterialCommunityIcons 
                   name={showPassword ?  'eye' : 'eye-off'} 
@@ -75,7 +118,6 @@ export default function Login({ navigation }) {
                   /> 
               </View>
             </View>
-
           </View>
 
           {/* forgot password + remember me*/}
@@ -101,9 +143,7 @@ export default function Login({ navigation }) {
           {/* login button */}
           <View className="flex flex-col pt-14">
             <TouchableOpacity
-             className="bg-indigo-900 rounded-3xl py-2 px-4"
-              onPress={() => navigation.navigate('AuthStack')}
-             >
+             className="bg-indigo-900 rounded-3xl py-2 px-4" onPress={handleLogIn}>
               <Text className="text-white text-lg font-bold text-center">
                 Login
               </Text>
@@ -112,9 +152,11 @@ export default function Login({ navigation }) {
 
           {/* or sign in with */}
           <View className="flex flex-col pt-7">
-            <Text className="text-neutral-500 font-bold text-center">
-              Or Continue With
-            </Text>
+            <TouchableOpacity onPress={onAuthenticate}>
+              <Text className="text-neutral-500 font-bold text-center">
+                Use Biometrics Instead?
+              </Text>
+            </TouchableOpacity>
 
             {/* social media buttons */}
             <View className="flex flex-auto flex-row w-full px-12 pt-7 gap-10">

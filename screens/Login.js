@@ -7,10 +7,8 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState } from 'react';
 import * as LocalAuthentication from 'expo-local-authentication';
 
-
 export default function Login({ navigation}) {
   const [isBiometricAvailable, setIsBiometricAvailable] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [checked, setChecked] = React.useState(false);
   const Stack = createNativeStackNavigator();
   const [password, setPassword] = useState(''); 
@@ -84,7 +82,6 @@ export default function Login({ navigation}) {
                   Sign Up Here
               </Text>
             </View>
-
           </View>
 
           {/* form */}
@@ -134,7 +131,7 @@ export default function Login({ navigation}) {
               </Text>
             </View>
             <View className="flex flex-col">
-              <Text className="text-neutral-500 font-bold pt-2">
+              <Text className="text-neutral-500 font-bold pt-2" onPress={() => navigation.navigate('ForgotPassword')}>
                 Forgot Password?
               </Text>
             </View>

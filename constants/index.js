@@ -1,5 +1,5 @@
 
-export const apiKey = '9583513ad68a48d4a15150144230510';
+export const apiKey = '06030782c8d248fda12185547230712';
 
 
 export const weatherImages = {

@@ -1,13 +1,11 @@
 import React from "react";
 import { Text, View, TouchableOpacity, TextInput, Image, ImageBackground, Alert} from "react-native";
 import Clouds from '../assets/images/clouds.gif'
-import { Checkbox } from "react-native-paper";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState } from 'react';
 
-export default function Login({ navigation }) {
 
+export default function Signup({ navigation }) {
   const [checked, setChecked] = React.useState(false);
   const Stack = createNativeStackNavigator();
   const [password, setPassword] = useState(''); 
@@ -18,7 +16,7 @@ export default function Login({ navigation }) {
     const [email, setEmail] = useState('');
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-  
+
     const handleSignUp = () => {
       if (!emailRegex.test(email)) {
         Alert.alert('Invalid Email', 'Please enter a valid email address');
@@ -32,8 +30,9 @@ export default function Login({ navigation }) {
         );
         return;
       }
-        navigation.navigate('AuthStack');
+        navigation.navigate('Login');
     };
+    
   return (
     <View className="bg-white h-full w-full">
       <ImageBackground source={Clouds} style={{width: '100%', height: '100%'}}>
@@ -84,7 +83,6 @@ export default function Login({ navigation }) {
 
               </View>
             </View>
-
           </View>
 
 

@@ -6,6 +6,7 @@ import CardUI from '../screens/CardUI';
 
 const Drawer = createDrawerNavigator();
 
+
 const AuthStack = () => {
     return (
         <Drawer.Navigator drawerContent={props => <CustomDrawer {...props} />} screenOptions={{headerShown: false}}>

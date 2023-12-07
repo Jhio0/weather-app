@@ -1,19 +1,21 @@
 import React from "react";
-import { Text, View, TouchableOpacity, TextInput, Image, ImageBackground} from "react-native";
+import { Text, View, TouchableOpacity, TextInput, Image, ImageBackground, Alert} from "react-native";
 import Clouds from '../assets/images/clouds.gif'
-import { Checkbox } from "react-native-paper";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState } from 'react';
 
-export default function Login({ navigation }) {
-    const [checked, setChecked] = React.useState(false);
+export default function ForgotPassword({ navigation }) {
     const Stack = createNativeStackNavigator();
-    const [password, setPassword] = useState(''); 
-    
-    // State variable to track password visibility 
-    const [showPassword, setShowPassword] = useState(false); 
-  
+    const [email, setEmail] = useState('');
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    const emailCheck = () => {
+      if (!emailRegex.test(email)) {
+        Alert.alert('Invalid Email', 'Please enter a valid email address');
+        return;
+      }
+        navigation.navigate('Login');
+    }
   return (
     <View className="bg-white h-full w-full">
       <ImageBackground source={Clouds} style={{width: '100%', height: '100%'}}>
@@ -23,8 +25,8 @@ export default function Login({ navigation }) {
           {/* header + signup */}
           <View className="flex left-0 top-0 items-start pt-10">
 
-            <Text className="text-black font-tracking-wider text-4xl">
-              Sign In
+            <Text className="text-black font-tracking-wider text-4xl pt-20">
+              Forgot Password?
             </Text>
 
             <View className="flex flex-row items-baseline pt-5">
@@ -40,31 +42,12 @@ export default function Login({ navigation }) {
 
           {/* form */}
           <View className="flex flex-col mt-10">
-
             <View className="flex flex-col">
               <Text className="text-black font-bold text-lg">
                 Email
               </Text>
-              <TextInput className="border-b-2 border-black w-full h-10" placeholder="Email" />
+              <TextInput className="border-b-2 border-black w-full h-10" placeholder="Email" value={email} onChangeText={(text) => setEmail(text)}/>
             </View>
-
-            <View className="flex flex-col mt-10">
-              <Text className="text-black font-bold text-lg">
-                Password
-              </Text>
-              <View className="flex flex-row items-center">
-                <TextInput 
-                  className="border-b-2 border-black w-full h-10" 
-                  secureTextEntry={!showPassword} 
-                  value={password} 
-                  onChangeText={setPassword} 
-                  placeholder="Enter Password"
-                  placeholderTextColor="#aaa"
-                />
-
-              </View>
-            </View>
-
           </View>
 
 
@@ -72,10 +55,10 @@ export default function Login({ navigation }) {
           <View className="flex flex-col pt-14">
             <TouchableOpacity
              className="bg-indigo-900 rounded-3xl py-2 px-4"
-              onPress={() => navigation.navigate('Login')}
+              onPress={() => {emailCheck()}}
              >
               <Text className="text-white text-lg font-bold text-center">
-                Signup
+                Send
               </Text>
             </TouchableOpacity>
           </View>

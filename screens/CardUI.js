@@ -20,14 +20,13 @@ import { StatusBar } from 'expo-status-bar';
 
 export default function CardUI({navigation}) {
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
-  const cardHeight = screenHeight * 0.4;
-  const cardWidth = screenWidth * 0.9;
+  const cardHeight = screenHeight
+  const cardWidth = screenWidth
 
   const [showSearch, toggleSearch] = useState(false);
   const [locations, setLocations] = useState([]);
   const [weather, setWeather] = useState({})
   const [loading, setLoading] = useState(true);
-
 
   const handleLocation = (loc) =>{
     console.log('location: ', loc);
@@ -106,11 +105,11 @@ export default function CardUI({navigation}) {
         ):(
         <ImageBackground source={background} className="flex-1">
           
-          <SafeAreaView style={{ backgroundColor: 'rgba(0, 0, 0, 0.35)'}} className="flex-1">
+          <SafeAreaView style={{ backgroundColor: 'rgba(0, 0, 0, 0.35)'}} className="flex-1 pt-10 pb-10 ">
             <View className="flex-row h-7 mx-4 items-center">
               {/* MenuBar */}
               <TouchableOpacity onPress={() => navigation.openDrawer()}>
-                <Bars3Icon size={25} color="white" style={{ marginHorizontal: 12 }} />
+                <Bars3Icon size={25} color="white" style={{ marginHorizontal: 12 }}/>
               </TouchableOpacity>
               {/* Search Section */}
 
